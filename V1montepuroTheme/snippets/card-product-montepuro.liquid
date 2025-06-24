@@ -1,0 +1,548 @@
+{% assign is_accessoire = false %}
+{% if card_product.tags contains 'Accessoire' %}
+  {% assign is_accessoire = true %}
+{% endif %}
+
+{% comment %} Bestimme den Kontext für das Collection Filter & Style Design {% endcomment %}
+{% assign use_collection_style = false %}
+{% if context == 'related' or context == 'collection' or context == 'default' %}
+  {% assign use_collection_style = true %}
+{% endif %}
+
+{% comment %} Verwende globale Settings oder Section-Settings falls verfügbar {% endcomment %}
+{% assign card_bg_color = settings.montepuro_card_bg_color | default: section.settings.card_bg_color | default: '#ffffff' %}
+{% assign card_border_color = settings.montepuro_card_border_color | default: section.settings.card_border_color | default: '#cccccc' %}
+{% assign card_text_color = settings.montepuro_card_text_color | default: section.settings.card_text_color | default: '#000000' %}
+{% assign title_color = settings.montepuro_title_color | default: section.settings.title_color | default: '#1a1a1a' %}
+{% assign title_font_weight = settings.montepuro_title_font_weight | default: section.settings.title_font_weight | default: '600' %}
+{% assign title_font_size_mobile = settings.montepuro_title_font_size_mobile | default: section.settings.title_font_size_mobile | default: 16 %}
+{% assign title_font_size_tablet = settings.montepuro_title_font_size_tablet | default: section.settings.title_font_size_tablet | default: 16 %}
+{% assign title_font_size_desktop = settings.montepuro_title_font_size_desktop | default: section.settings.title_font_size_desktop | default: 16 %}
+{% assign atc_bg_color = settings.montepuro_atc_bg_color | default: section.settings.atc_bg_color | default: '#000000' %}
+{% assign atc_text_color = settings.montepuro_atc_text_color | default: section.settings.atc_text_color | default: '#ffffff' %}
+{% assign atc_hover_color = settings.montepuro_atc_hover_color | default: section.settings.atc_hover_color | default: '#333333' %}
+{% assign atc_font_weight = settings.montepuro_atc_font_weight | default: section.settings.atc_font_weight | default: '500' %}
+{% assign atc_font_size_mobile = settings.montepuro_atc_font_size_mobile | default: section.settings.atc_font_size_mobile | default: 14 %}
+{% assign atc_font_size_tablet = settings.montepuro_atc_font_size_tablet | default: section.settings.atc_font_size_tablet | default: 14 %}
+{% assign atc_font_size_desktop = settings.montepuro_atc_font_size_desktop | default: section.settings.atc_font_size_desktop | default: 14 %}
+{% assign variant_bg_color = settings.montepuro_variant_bg_color | default: section.settings.variant_bg_color | default: '#ffffff' %}
+{% assign variant_text_color = settings.montepuro_variant_text_color | default: section.settings.variant_text_color | default: '#000000' %}
+{% assign variant_font_size_mobile = settings.montepuro_variant_font_size_mobile | default: section.settings.variant_font_size_mobile | default: 13 %}
+{% assign variant_font_size_tablet = settings.montepuro_variant_font_size_tablet | default: section.settings.variant_font_size_tablet | default: 13 %}
+{% assign variant_font_size_desktop = settings.montepuro_variant_font_size_desktop | default: section.settings.variant_font_size_desktop | default: 13 %}
+{% assign specs_icon = settings.montepuro_specs_icon | default: section.settings.specs_icon %}
+{% assign specs_text_color = settings.montepuro_specs_text_color | default: section.settings.specs_text_color | default: '#333333' %}
+{% assign specs_font_size_mobile = settings.montepuro_specs_font_size_mobile | default: section.settings.specs_font_size_mobile | default: 13 %}
+{% assign specs_font_size_tablet = settings.montepuro_specs_font_size_tablet | default: section.settings.specs_font_size_tablet | default: 13 %}
+{% assign specs_font_size_desktop = settings.montepuro_specs_font_size_desktop | default: section.settings.specs_font_size_desktop | default: 13 %}
+{% assign divider_color = settings.montepuro_divider_color | default: section.settings.divider_color | default: '#e5e5e5' %}
+{% assign show_wishlist_button = settings.montepuro_show_wishlist_button | default: section.settings.show_wishlist_button | default: true %}
+
+{% comment %} Vollständige Isolation von Section-Einstellungen {% endcomment %}
+<div class="montepuro-card-wrapper{% if use_collection_style %} montepuro-collection-style montepuro-isolated{% endif %}">
+  <div class="montepuro-card{% if context %} {{ context }}{% endif %}{% if is_accessoire %} montepuro-accessoire{% endif %}{% if use_collection_style %} montepuro-collection-layout{% endif %}">
+    {% assign card_product = card_product | default: product %}
+    {% assign context = context | default: 'default' %}
+    {% assign specs = card_product.metafields.custom %}
+    
+    {% if is_accessoire %}
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 20px 12px 16px 12px;">
+        <div class="montepuro-title" style="font-size: 1.35rem; font-weight: 700; margin-bottom: 8px; text-align: center; width: 100%;">{{ card_product.title }}</div>
+        <a href="{{ card_product.url }}" style="display: block; width: 100%; max-width: 220px; margin-bottom: 12px;">
+          <img 
+            src="{{ card_product.featured_image | img_url: '600x' }}" 
+            alt="{{ card_product.title | escape }}"
+            loading="lazy"
+            style="width: 100%; height: auto; border-radius: 8px; display: block; margin: 0 auto;"
+          />
+        </a>
+        <div style="width: 100%; display: flex; gap: 10px;">
+          <button class="montepuro-atc" style="flex: 1; background: #b48a4a; color: #fff; font-weight: 600; border-radius: 6px; border: none; padding: 12px 0; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; gap: 8px;">🛒 Add to Basket</button>
+          <button class="montepuro-wishlist" style="background: #fff; border: 1px solid #ddd; border-radius: 6px; width: 48px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem;">♡</button>
+        </div>
+      </div>
+    {% else %}
+      {% comment %} Standard Layout - Bild links, Titel und Specs rechts - Exakt wie in card-product-montepuro {% endcomment %}
+      <div class="montepuro-top">
+        <div class="montepuro-image">
+          <a href="{{ card_product.url }}">
+            <img 
+              src="{{ card_product.featured_image | img_url: '600x' }}" 
+              alt="{{ card_product.title | escape }}"
+              loading="lazy"
+            />
+          </a>
+        </div>
+        <div class="montepuro-info">
+          <div class="montepuro-title">{{ card_product.title }}</div>
+          <div class="montepuro-specs">
+            <div class="spec-row">
+              <img src="https://www.svgrepo.com/download/155820/resize-length.svg" alt="Länge" class="icon" />
+              <span class="text">{{ specs.lange }}</span>
+            </div>
+            <div class="spec-row">
+              <img src="https://www.svgrepo.com/download/155820/resize-length.svg" alt="Ringmaß" class="icon" />
+              <span class="text">{{ specs.ringmas }}</span>
+            </div>
+            <div class="spec-row">
+              <img src="https://www.svgrepo.com/download/155820/resize-length.svg" alt="Stärke" class="icon" />
+              <span class="text">{{ specs.starke }}</span>
+            </div>
+            <div class="spec-row">
+              <img src="https://www.svgrepo.com/download/155820/resize-length.svg" alt="Herkunft" class="icon" />
+              <span class="text">{{ specs.herkunft }}</span>
+            </div>
+            <div class="spec-row">
+              <img src="https://www.svgrepo.com/download/155820/resize-length.svg" alt="Rauchdauer" class="icon" />
+              <span class="text">{{ specs.rauchdauer }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="montepuro-divider"></div>
+      <div class="montepuro-bottom">
+        <div class="montepuro-bottom-top{% unless card_product.variants.size > 1 %} montepuro-no-variants{% endunless %}">
+          {% if card_product.variants.size > 1 %}
+          <div class="montepuro-variant-picker">
+            <label for="product-variant" class="montepuro-variant-label">Variante wählen:</label>
+            <select id="product-variant" class="montepuro-variant-dropdown" data-variants='{{ card_product.variants | json | escape }}'>
+              {% for variant in card_product.variants %}
+                <option value="{{ variant.id }}">
+                  {% if forloop.first %}
+                    {{ variant.title }}
+                  {% else %}
+                    {% assign price = variant.price | money %}
+                    {% assign compare_price = variant.compare_at_price | money %}
+                    {% if variant.compare_at_price > variant.price %}
+                      {{ variant.title }} – {{ price }} statt <s>{{ compare_price }}</s>
+                    {% else %}
+                      {{ variant.title }} – {{ price }}
+                    {% endif %}
+                  {% endif %}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          {% endif %}
+          <div class="montepuro-price">
+            {{ card_product.price | money }}
+          </div>
+        </div>
+        <div class="montepuro-bottom-buttons">
+          <button class="montepuro-atc">🛒 Add to Basket</button>
+          <button class="montepuro-wishlist">♡</button>
+        </div>
+      </div>
+      
+      {% if use_collection_style %}
+      <style>
+        /* Vollständige Isolation von Section-Einstellungen */
+        .montepuro-isolated {
+          /* Überschreibe alle Section-spezifischen Styles */
+          width: 100% !important;
+          max-width: none !important;
+          min-width: 0 !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          flex: none !important;
+          flex-basis: auto !important;
+          flex-grow: 0 !important;
+          flex-shrink: 0 !important;
+          order: unset !important;
+          align-self: auto !important;
+          grid-column: unset !important;
+          grid-row: unset !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          position: relative !important;
+          overflow: visible !important;
+          transform: none !important;
+          transition: none !important;
+          animation: none !important;
+        }
+        
+        /* Überschreibe alle Slider-spezifischen Styles */
+        .montepuro-isolated.hdt-slider__slide {
+          width: 280px !important;
+          min-width: 280px !important;
+          max-width: 280px !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          flex: 0 0 280px !important;
+          flex-basis: 280px !important;
+          flex-grow: 0 !important;
+          flex-shrink: 0 !important;
+          margin: 0 15px !important;
+          padding: 0 !important;
+          position: relative !important;
+          overflow: visible !important;
+          transform: none !important;
+          transition: all 0.3s ease !important;
+          animation: none !important;
+        }
+        
+        /* WICHTIG: Überschreibe auch Related Products spezifische Styles */
+        .montepuro-isolated.hdt-pr-style7 {
+          width: 280px !important;
+          min-width: 280px !important;
+          max-width: 280px !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          flex: 0 0 280px !important;
+          flex-basis: 280px !important;
+          flex-grow: 0 !important;
+          flex-shrink: 0 !important;
+          margin: 0 15px !important;
+          padding: 0 !important;
+          position: relative !important;
+          overflow: visible !important;
+          transform: none !important;
+          transition: all 0.3s ease !important;
+          animation: none !important;
+        }
+        
+        /* Collection Filter & Style Design - Exakt wie in der ursprünglichen Datei */
+        .montepuro-collection-style .montepuro-card.montepuro-collection-layout {
+          background: {{ card_bg_color }} !important;
+          border: 1px solid {{ card_border_color }} !important;
+          border-radius: 8px !important;
+          overflow: visible !important; /* WICHTIG: visible damit das Bild herausragen kann */
+          position: relative !important;
+          transition: all 0.3s ease !important;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1) !important;
+          width: 100% !important;
+          height: auto !important;
+          min-height: 0 !important;
+          max-height: none !important;
+          display: block !important;
+          flex: none !important;
+        }
+        
+        .montepuro-collection-style .montepuro-card.montepuro-collection-layout:hover {
+          box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+          transform: translateY(-2px) !important;
+        }
+        
+        /* WICHTIG: Exakte Container-Verteilung wie in montepuro-collection.css */
+        .montepuro-collection-style .montepuro-top {
+          position: relative !important;
+          padding-left: 25% !important; /* Info-Bereich nimmt 75% ein */
+          overflow: visible !important; /* WICHTIG: visible damit das Bild herausragen kann */
+          border-bottom: 1px solid #e5e5e5 !important; /* Trennlinie */
+          height: 208px !important; /* Fixe Höhe wie in der ursprünglichen CSS */
+        }
+        
+        /* Bild nimmt 25% der Breite ein und liegt auf der Trennlinie - WICHTIG: ragt oben heraus */
+        .montepuro-collection-style .montepuro-image {
+          position: absolute !important;
+          bottom: 0 !important; /* Liegt auf der Trennlinie */
+          left: 0 !important;
+          width: 25% !important; /* Exakt 25% wie in der ursprünglichen CSS */
+          overflow: visible !important; /* WICHTIG: visible damit das Bild herausragen kann */
+          z-index: 2 !important;
+        }
+        
+        .montepuro-collection-style .montepuro-image img {
+          width: 100% !important; /* 25% der Card-Breite */
+          height: auto !important; /* WICHTIG: auto damit das Bild seine natürliche Höhe behält und herausragt */
+          display: block !important;
+          object-fit: contain !important; /* Wie in der ursprünglichen CSS */
+        }
+        
+        /* Info-Bereich nimmt 75% der Breite ein */
+        .montepuro-collection-style .montepuro-info {
+          flex: 1 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: flex-start !important;
+          align-items: flex-start !important;
+          width: 100% !important;
+          padding: 0 25px 0 5px !important; /* Exakt wie in der ursprünglichen CSS */
+          gap: 8px !important;
+          background-color: transparent !important;
+          box-sizing: border-box !important;
+          text-align: left !important;
+        }
+        
+        .montepuro-collection-style .montepuro-title {
+          font-family: 'Georgia', serif !important;
+          font-size: {{ title_font_size_mobile }}px !important;
+          font-weight: {{ title_font_weight }} !important;
+          color: {{ title_color }} !important;
+          line-height: 1.4 !important;
+          letter-spacing: -0.01em !important;
+          margin: 0 !important;
+          margin-bottom: 8px !important;
+        }
+        
+        /* Specs sind absolut positioniert am unteren Rand */
+        .montepuro-collection-style .montepuro-specs {
+          position: absolute !important;
+          bottom: 10px !important;
+          left: 25% !important; /* Startet nach dem Bild */
+          right: 24px !important;
+          display: grid !important;
+          grid-template-columns: auto auto !important;
+          grid-auto-rows: auto !important;
+          gap: 6px 0px !important;
+          box-sizing: border-box !important;
+        }
+        
+        /* Explicit column placement for specs */
+        .montepuro-collection-style .montepuro-specs .spec-row:nth-child(odd) {
+          grid-column: 1 !important;
+        }
+        .montepuro-collection-style .montepuro-specs .spec-row:nth-child(even) {
+          grid-column: 2 !important;
+        }
+        /* Span the last spec across both columns */
+        .montepuro-collection-style .montepuro-specs .spec-row:nth-child(5) {
+          grid-column: 1 / -1 !important;
+        }
+        
+        .montepuro-collection-style .spec-row {
+          display: flex !important;
+          align-items: center !important;
+          gap: 8px !important;
+          padding: 2px 0 !important;
+          white-space: nowrap !important;
+          width: auto !important;
+          min-width: 0 !important;
+          flex: 0 0 auto !important;
+        }
+        
+        .montepuro-collection-style .spec-row .icon {
+          width: 16px !important;
+          height: 16px !important;
+          object-fit: contain !important;
+          flex-shrink: 0 !important;
+          display: inline-block !important;
+        }
+        
+        .montepuro-collection-style .spec-row .text {
+          color: {{ specs_text_color }} !important;
+          font-size: {{ specs_font_size_mobile }}px !important;
+        }
+        
+        /* Trennlinie - Bild liegt auf dieser Linie */
+        .montepuro-collection-style .montepuro-divider {
+          height: 1px !important;
+          background: {{ divider_color }} !important;
+          margin: 0 !important;
+          position: relative !important;
+          z-index: 1 !important;
+        }
+        
+        .montepuro-collection-style .montepuro-bottom {
+          padding: 20px !important;
+        }
+        
+        .montepuro-collection-style .montepuro-price {
+          color: {{ card_text_color }} !important;
+          font-size: 1.2rem !important;
+          font-weight: 700 !important;
+          margin-bottom: 12px !important;
+        }
+        
+        .montepuro-collection-style .montepuro-bottom-buttons {
+          display: flex !important;
+          gap: 8px !important;
+        }
+        
+        .montepuro-collection-style .montepuro-atc {
+          flex: 1 !important;
+          background: {{ atc_bg_color }} !important;
+          color: {{ atc_text_color }} !important;
+          border: none !important;
+          border-radius: 6px !important;
+          padding: 12px 16px !important;
+          font-weight: {{ atc_font_weight }} !important;
+          font-size: {{ atc_font_size_mobile }}px !important;
+          cursor: pointer !important;
+          transition: background 0.3s ease !important;
+        }
+        
+        .montepuro-collection-style .montepuro-atc:hover {
+          background-color: {{ atc_hover_color }} !important;
+        }
+        
+        .montepuro-collection-style .montepuro-wishlist {
+          background: #ffffff !important;
+          border: 1px solid #e5e5e5 !important;
+          border-radius: 6px !important;
+          width: 48px !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          font-size: 1.2rem !important;
+          cursor: pointer !important;
+          transition: all 0.3s ease !important;
+        }
+        
+        .montepuro-collection-style .montepuro-wishlist:hover {
+          border-color: #b48a4a !important;
+          color: #b48a4a !important;
+        }
+        
+        .montepuro-collection-style .montepuro-variant-picker {
+          margin-bottom: 12px !important;
+        }
+        
+        .montepuro-collection-style .montepuro-variant-label {
+          display: block !important;
+          font-size: {{ variant_font_size_mobile }}px !important;
+          color: {{ variant_text_color }} !important;
+          margin-bottom: 4px !important;
+        }
+        
+        .montepuro-collection-style .montepuro-variant-dropdown {
+          width: 100% !important;
+          padding: 8px 12px !important;
+          border: 1px solid #e5e5e5 !important;
+          border-radius: 4px !important;
+          font-size: {{ variant_font_size_mobile }}px !important;
+          background: {{ variant_bg_color }} !important;
+          color: {{ variant_text_color }} !important;
+        }
+        
+        /* Responsive Anpassungen */
+        @media (min-width: 768px) {
+          .montepuro-collection-style .montepuro-title {
+            font-size: {{ title_font_size_tablet }}px !important;
+          }
+          
+          .montepuro-collection-style .spec-row .text {
+            font-size: {{ specs_font_size_tablet }}px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-atc {
+            font-size: {{ atc_font_size_tablet }}px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-variant-label {
+            font-size: {{ variant_font_size_tablet }}px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-variant-dropdown {
+            font-size: {{ variant_font_size_tablet }}px !important;
+          }
+        }
+        
+        @media (min-width: 1150px) {
+          .montepuro-collection-style .montepuro-title {
+            font-size: {{ title_font_size_desktop }}px !important;
+          }
+          
+          .montepuro-collection-style .spec-row .text {
+            font-size: {{ specs_font_size_desktop }}px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-atc {
+            font-size: {{ atc_font_size_desktop }}px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-variant-label {
+            font-size: {{ variant_font_size_desktop }}px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-variant-dropdown {
+            font-size: {{ variant_font_size_desktop }}px !important;
+          }
+        }
+        
+        @media (max-width: 768px) {
+          .montepuro-isolated.hdt-slider__slide,
+          .montepuro-isolated.hdt-pr-style7 {
+            width: 240px !important;
+            min-width: 240px !important;
+            max-width: 240px !important;
+            flex: 0 0 240px !important;
+            flex-basis: 240px !important;
+            margin: 0 10px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-top {
+            height: 180px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-bottom {
+            padding: 15px !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .montepuro-isolated.hdt-slider__slide,
+          .montepuro-isolated.hdt-pr-style7 {
+            width: 200px !important;
+            min-width: 200px !important;
+            max-width: 200px !important;
+            flex: 0 0 200px !important;
+            flex-basis: 200px !important;
+            margin: 0 8px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-top {
+            height: 160px !important;
+          }
+          
+          .montepuro-collection-style .montepuro-bottom {
+            padding: 12px !important;
+          }
+        }
+        
+        .montepuro-isolated.hdt-slider__slide,
+        .montepuro-isolated.hdt-pr-style7,
+        .montepuro-isolated.hdt-slider__slide *,
+        .montepuro-isolated.hdt-pr-style7 * {
+          overflow: visible !important;
+        }
+        
+        .hdt-half_item {
+          overflow: visible !important;
+        }
+        .hdt-slider__slide,
+        .hdt-slider__container,
+        .hdt-slider__viewport,
+        .hdt-slider,
+        .hdt-collection-products {
+          overflow: visible !important;
+        }
+      </style>
+      {% endif %}
+      
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          document.querySelectorAll('.montepuro-card').forEach(function(card) {
+            const select = card.querySelector(".montepuro-variant-dropdown");
+            const priceDisplay = card.querySelector(".montepuro-price");
+
+            if (!select || !priceDisplay) return;
+
+            const variantData = JSON.parse(select.dataset.variants);
+
+            function formatPrice(cents) {
+              return (cents / 100).toFixed(2).replace('.', ',') + ' €';
+            }
+
+            function updatePrice(variantId) {
+              const variant = variantData.find(v => v.id == variantId);
+              if (variant && variant.price) {
+                priceDisplay.textContent = formatPrice(variant.price);
+              }
+            }
+
+            // Initial update
+            updatePrice(select.value);
+
+            select.addEventListener("change", function () {
+              updatePrice(this.value);
+            });
+          });
+        });
+      </script>
+    {% endif %}
+  </div>
+</div>
